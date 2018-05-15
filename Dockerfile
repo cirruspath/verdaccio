@@ -24,13 +24,10 @@ RUN npm config set registry http://registry.npmjs.org/ && \
     yarn run lint && \
     yarn run code:docker-build && \
     yarn run build:webui && \
-    yarn run test:unit -- --silent true --coverage false --bail && \
     yarn cache clean && \
     yarn install --production=true --pure-lockfile
 
-RUN mkdir -p /verdaccio/storage /verdaccio/conf
-
-ADD conf/docker.yaml /verdaccio/conf/config.yaml
+RUN mkdir -p /verdaccio/storage/private /verdaccio/storage/ci /verdaccio/conf
 
 RUN addgroup -S verdaccio && adduser -S -G verdaccio verdaccio && \
     chown -R verdaccio:verdaccio "$APPDIR" && \
@@ -47,4 +44,4 @@ VOLUME ["/verdaccio"]
 
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 
-CMD $APPDIR/bin/verdaccio --config /verdaccio/conf/config.yaml --listen $PROTOCOL://0.0.0.0:${PORT}
+CMD $APPDIR/bin/verdaccio --config /app/conf/config.yaml --listen $PROTOCOL://0.0.0.0:${PORT}
